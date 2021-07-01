@@ -1,12 +1,12 @@
 package org.example.kafka.api;
 
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.Future;
 
 public interface Producer<K, V> {
 
     Future<RecordMetadata> sendAsync(
-            String topic, Integer partition, Long timestamp, K key, V value, Map<String, byte[]> properties);
+            String topic, Integer partition, Long timestamp, K key, V value, List<KeyValue> keyValues);
 
     default Future<RecordMetadata> sendAsync(String topic, Integer partition, Long timestamp, K key, V value) {
         return sendAsync(topic, partition, timestamp, key, value, null);

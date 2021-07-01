@@ -18,13 +18,8 @@ public class StringConsumer extends KafkaConsumer<String, String> implements Con
     public List<Message<String, String>> receive(long timeoutMs) {
         final List<Message<String, String>> messages = new ArrayList<>();
         poll(Duration.ofMillis(timeoutMs)).forEach(record -> {
-            final Message<String, String> message = new Message<>(
-                    record.key(),
-                    record.value(),
-                    record.topic(),
-                    record.partition(),
-                    record.offset());
-            record.headers().forEach(header -> message.addProperty(header.key(), header.value()));
+            final Message<String, String> message = Message.create(record);
+            record.headers().forEach(header -> message.addKeyValue(header.key(), header.value()));
             messages.add(message);
         });
         return messages;
