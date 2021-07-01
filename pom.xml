@@ -11,6 +11,7 @@
 
   <properties>
     <slf4j.simple.version>1.7.30</slf4j.simple.version>
+    <lombok.version>1.18.20</lombok.version>
   </properties>
 
   <modules>
@@ -18,6 +19,7 @@
     <module>kafka_1_0</module>
     <module>kafka_2_0</module>
     <module>demo</module>
+    <module>kafka-client-wrapper</module>
   </modules>
 
   <dependencyManagement>
@@ -27,6 +29,11 @@
         <artifactId>slf4j-simple</artifactId>
         <version>${slf4j.simple.version}</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

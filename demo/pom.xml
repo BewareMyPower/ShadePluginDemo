@@ -14,14 +14,10 @@
   <dependencies>
     <dependency>
       <groupId>org.example</groupId>
-      <artifactId>kafka_1_0</artifactId>
+      <artifactId>kafka-client-wrapper</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.example</groupId>
-      <artifactId>kafka_2_0</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
