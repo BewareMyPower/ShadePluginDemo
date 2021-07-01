@@ -14,6 +14,7 @@
   </properties>
 
   <modules>
+    <module>kafka-api</module>
     <module>kafka_1_0</module>
     <module>kafka_2_0</module>
     <module>demo</module>
