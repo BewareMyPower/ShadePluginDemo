@@ -17,11 +17,7 @@ public class StringConsumer extends KafkaConsumer<String, String> implements Con
     @Override
     public List<Message<String, String>> receive(long timeoutMs) {
         final List<Message<String, String>> messages = new ArrayList<>();
-        poll(Duration.ofMillis(timeoutMs)).forEach(record -> {
-            final Message<String, String> message = Message.create(record);
-            record.headers().forEach(header -> message.addKeyValue(header.key(), header.value()));
-            messages.add(message);
-        });
+        poll(Duration.ofMillis(timeoutMs)).forEach(record -> messages.add(Message.create(record)));
         return messages;
     }
 }

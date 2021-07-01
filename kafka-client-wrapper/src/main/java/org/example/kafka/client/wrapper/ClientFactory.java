@@ -40,12 +40,13 @@ public class ClientFactory {
         }
     }
 
-    public Consumer<String, String> createConsumer(String bootstrapServers, String groupId) {
+    public Consumer<String, String> createConsumer(String bootstrapServers, String groupId, boolean fromEarliest) {
         final Properties props = ConsumerConfiguration.builder()
                 .bootstrapServers(bootstrapServers)
                 .groupId(groupId)
                 .keyDeserializer(getStringDeserializer())
                 .valueDeserializer(getStringDeserializer())
+                .fromEarliest(fromEarliest)
                 .build()
                 .toProperties();
 
