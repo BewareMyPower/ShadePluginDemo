@@ -8,8 +8,8 @@ public class ConsumerConfiguration {
 
     String bootstrapServers;
     String groupId;
-    Class<?> keyDeserializer;
-    Class<?> valueDeserializer;
+    Object keyDeserializer;
+    Object valueDeserializer;
     boolean fromEarliest = false;
 
     public Properties toProperties() {

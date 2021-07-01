@@ -2,6 +2,7 @@ package org.example.kafka_1_0;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -9,20 +10,13 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.example.kafka.api.Producer;
-import org.example.kafka.api.ProducerConfiguration;
 import org.example.kafka.api.RecordMetadata;
 
 public class StringProducer extends KafkaProducer<String, String> implements Producer<String, String> {
 
-    public StringProducer(final String bootstrapServers) {
-        super(ProducerConfiguration.builder()
-                .bootstrapServers(bootstrapServers)
-                .keySerializer(StringSerializer.class)
-                .valueSerializer(StringSerializer.class)
-                .build()
-                .toProperties());
+    public StringProducer(final Properties properties) {
+        super(properties);
     }
 
     @Override

@@ -7,8 +7,8 @@ import lombok.Builder;
 public class ProducerConfiguration {
 
     String bootstrapServers;
-    Class<?> keySerializer;
-    Class<?> valueSerializer;
+    Object keySerializer;
+    Object valueSerializer;
 
     public Properties toProperties() {
         final Properties props = new Properties();
