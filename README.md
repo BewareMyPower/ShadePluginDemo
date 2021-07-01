@@ -38,3 +38,19 @@ You may see followed logs.
 ```
 
 It's okay because `AppInfoParser` reads the version and commit id from the same `/kafka/kafka-version.properties`.
+
+## Intellj Idea
+
+Intellij Idea doesn't support maven-shade-plugin well, if you just click the button to run `Demo.main`, the classes may still be loaded from `org.apache.kafka` package but not `org.apache.kafka-x-y-z` package.
+
+To solve this issue, you need to:
+1. Right click on `pom.xml` of shaded modules like `kafka_1_0`.
+2. Choose "Maven" - "Ignore Projects".
+3. Right click on the `pom.xml` of the project.
+4. Choose "Maven" - "Reload project".
+
+Then Idea will load classes from shaded JARs. However, since shaded modules are ignored by Idea, the code completion is disabled for these modules. So we need to reimport the shaded modules.
+1. Right click on `pom.xml` of shaded modules like `kafka_1_0`.
+2. Choose "Maven" - "Unignore Projects".
+
+See [here](https://stackoverflow.com/questions/30407065/getting-intellij-to-import-shaded-dependencies-in-a-multi-module-maven-project/30898810) for reference.
