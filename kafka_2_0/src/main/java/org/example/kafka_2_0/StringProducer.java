@@ -34,8 +34,12 @@ public class StringProducer extends KafkaProducer<String, String> implements Pro
         CompletableFuture<RecordMetadata> future = new CompletableFuture<>();
         send(new ProducerRecord<>(topic, partition, timestamp, key, value, headers), (recordMetadata, e) -> {
             if (e == null) {
-                future.complete(new RecordMetadata(
-                        recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset()));
+                final RecordMetadata metadata = new RecordMetadata(
+                        recordMetadata.topic(),
+                        recordMetadata.partition(),
+                        recordMetadata.offset());
+                metadata.setTimestamp(recordMetadata.timestamp());
+                future.complete(metadata);
             } else {
                 future.completeExceptionally(e);
             }

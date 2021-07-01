@@ -1,17 +1,18 @@
 package org.example.kafka.api;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@AllArgsConstructor
+@Getter
+@RequiredArgsConstructor
 public class RecordMetadata {
 
-    @Getter
     private final String topic;
-    @Getter
     private final int partition;
-    @Getter
     private final long offset;
+    @Setter
+    private Long timestamp = null;
 
     @Override
     public String toString() {
