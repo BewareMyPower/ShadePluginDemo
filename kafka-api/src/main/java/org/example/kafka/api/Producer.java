@@ -3,7 +3,7 @@ package org.example.kafka.api;
 import java.util.List;
 import java.util.concurrent.Future;
 
-public interface Producer<K, V> {
+public interface Producer<K, V> extends AutoCloseable {
 
     Future<RecordMetadata> sendAsync(
             String topic, Integer partition, Long timestamp, K key, V value, List<KeyValue> keyValues);
@@ -23,6 +23,4 @@ public interface Producer<K, V> {
     default Future<RecordMetadata> sendAsync(String topic, V value) {
         return sendAsync(topic, null, null, null, value, null);
     }
-
-    void close();
 }

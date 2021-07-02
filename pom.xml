@@ -20,6 +20,7 @@
     <module>kafka_2_0</module>
     <module>demo</module>
     <module>kafka-client-wrapper</module>
+    <module>kafka_0_11_0</module>
   </modules>
 
   <dependencyManagement>

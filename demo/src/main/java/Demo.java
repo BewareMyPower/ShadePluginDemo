@@ -1,8 +1,8 @@
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.example.kafka.api.Consumer;
 import org.example.kafka.api.KeyValue;
 import org.example.kafka.api.Message;
@@ -23,51 +23,50 @@ public class Demo {
         }
     }
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    private static final String[] SUPPORTED_VERSIONS = {
+            ClientFactory.KAFKA_0_11_0,
+            ClientFactory.KAFKA_1_0_0,
+            ClientFactory.KAFKA_2_0_0
+    };
+
+    public static void main(String[] args) {
         final String bootstrapServers = "localhost:9092";
         final String topic = "my-topic";
 
-        final ClientFactory clientFactory_1_0_0 = new ClientFactory(ClientFactory.KAFKA_1_0_0);
-        final ClientFactory clientFactory_2_0_0 = new ClientFactory(ClientFactory.KAFKA_2_0_0);
+        final Map<String, ClientFactory> clientFactoryMap = Arrays.stream(SUPPORTED_VERSIONS)
+                .collect(Collectors.toMap(
+                        version -> version,
+                        ClientFactory::new,
+                        (k, v) -> { throw new IllegalStateException("Duplicated key: " + k); },
+                        TreeMap::new
+                ));
 
-        final Producer<String, String> producer1 = clientFactory_1_0_0.createProducer(bootstrapServers);
-        RecordMetadata recordMetadata = producer1.sendAsync(topic, "kafka 1.0.0").get();
-        System.out.println("Send to " + recordMetadata);
-        recordMetadata = producer1.sendAsync(topic, 0, null, "key-1-0-0", "value-1-0-0",
-                Collections.singletonList(new KeyValue("k1", "v1".getBytes(StandardCharsets.UTF_8)))).get();
-        System.out.println("Send to " + recordMetadata);
-        producer1.close();
+        // 1. Produce messages
+        clientFactoryMap.forEach((version, factory) -> {
+            try (Producer<String, String> producer = factory.createProducer(bootstrapServers)) {
+                final RecordMetadata metadata = producer.sendAsync(topic, "message-" + version).get();
+                System.out.println("Kafka producer " + version + " send to " + metadata);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
-        final Producer<String, String> producer2 = clientFactory_2_0_0.createProducer(bootstrapServers);
-        recordMetadata = producer2.sendAsync(topic, "kafka 2.0.0").get();
-        System.out.println("Send to " + recordMetadata);
-        recordMetadata = producer2.sendAsync(topic, 0, null, "key-2-0-0", "value-2-0-0",
-                Collections.singletonList(new KeyValue("k2", "v2".getBytes(StandardCharsets.UTF_8)))).get();
-        System.out.println("Send to " + recordMetadata);
-        producer2.close();
-
-        final Consumer<String, String> consumer1 =
-                clientFactory_1_0_0.createConsumer(bootstrapServers, "group-1-0-0", true);
-        consumer1.subscribe(topic);
-        final AtomicInteger numReceived = new AtomicInteger(0);
-        while (numReceived.get() < 4) {
-            consumer1.receive(1000).forEach(message -> {
-                processMessage(message);
-                numReceived.incrementAndGet();
-            });
-        }
-        consumer1.close();
-
-        final Consumer<String, String> consumer2 =
-                clientFactory_2_0_0.createConsumer(bootstrapServers, "group-2-0-0", true);
-        consumer2.subscribe(topic);
-        numReceived.set(0);
-        while (numReceived.get() < 4) {
-            consumer2.receive(1000).forEach(message -> {
-                processMessage(message);
-                numReceived.incrementAndGet();
-            });
-        }
-        consumer2.close();
+        // 2. Consume messages
+        clientFactoryMap.forEach((version, factory) -> {
+            try (Consumer<String, String> consumer =
+                         factory.createConsumer(bootstrapServers, "group-" + version, true)) {
+                consumer.subscribe(topic);
+                int numReceived = 0;
+                System.out.println("# Kafka consumer " + version + " started receiving...");
+                while (numReceived < SUPPORTED_VERSIONS.length) {
+                    final List<Message<String, String>> messages = consumer.receive(1000);
+                    numReceived += messages.size();
+                    messages.forEach(Demo::processMessage);
+                }
+                System.out.println("# Kafka consumer " + version + " done.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

@@ -1,10 +1,11 @@
 package org.example.kafka.api;
 
+import java.io.Closeable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public interface Consumer<K, V> {
+public interface Consumer<K, V> extends Closeable {
 
     void subscribe(Collection<String> topics);
 
@@ -13,6 +14,4 @@ public interface Consumer<K, V> {
     }
 
     List<Message<K, V>> receive(long timeoutMs);
-
-    void close();
 }

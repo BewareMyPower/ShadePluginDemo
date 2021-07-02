@@ -10,6 +10,7 @@ import org.example.kafka.api.ProducerConfiguration;
 @AllArgsConstructor
 public class ClientFactory {
 
+    public static final String KAFKA_0_11_0 = "0-11-0";
     public static final String KAFKA_1_0_0 = "1-0-0";
     public static final String KAFKA_2_0_0 = "2-0-0";
 
@@ -31,12 +32,15 @@ public class ClientFactory {
                 .build()
                 .toProperties();
 
-        if (version.equals(KAFKA_1_0_0)) {
-            return new org.example.kafka_1_0.StringProducer(props);
-        } else if (version.equals(KAFKA_2_0_0)) {
-            return new org.example.kafka_2_0.StringProducer(props);
-        } else {
-            throw new IllegalArgumentException("No producer for version: " + version);
+        switch (version) {
+            case KAFKA_0_11_0:
+                return new org.example.kafka_0_11_0.StringProducer(props);
+            case KAFKA_1_0_0:
+                return new org.example.kafka_1_0.StringProducer(props);
+            case KAFKA_2_0_0:
+                return new org.example.kafka_2_0.StringProducer(props);
+            default:
+                throw new IllegalArgumentException("No producer for version: " + version);
         }
     }
 
@@ -50,12 +54,15 @@ public class ClientFactory {
                 .build()
                 .toProperties();
 
-        if (version.equals(KAFKA_1_0_0)) {
-            return new org.example.kafka_1_0.StringConsumer(props);
-        } else if (version.equals(KAFKA_2_0_0)) {
-            return new org.example.kafka_2_0.StringConsumer(props);
-        } else {
-            throw new IllegalArgumentException("No producer for version: " + version);
+        switch (version) {
+            case KAFKA_0_11_0:
+                return new org.example.kafka_0_11_0.StringConsumer(props);
+            case KAFKA_1_0_0:
+                return new org.example.kafka_1_0.StringConsumer(props);
+            case KAFKA_2_0_0:
+                return new org.example.kafka_2_0.StringConsumer(props);
+            default:
+                throw new IllegalArgumentException("No producer for version: " + version);
         }
     }
 }
