@@ -1,26 +1,15 @@
 package org.example.kafka.api;
 
-import java.util.List;
 import java.util.concurrent.Future;
 
 public interface Producer<K, V> extends AutoCloseable {
 
-    Future<RecordMetadata> sendAsync(
-            String topic, Integer partition, Long timestamp, K key, V value, List<KeyValue> keyValues);
+    Future<RecordMetadata> sendAsync(MessageBuilder<K, V> context);
 
-    default Future<RecordMetadata> sendAsync(String topic, Integer partition, Long timestamp, K key, V value) {
-        return sendAsync(topic, partition, timestamp, key, value, null);
-    }
-
-    default Future<RecordMetadata> sendAsync(String topic, Integer partition, K key, V value) {
-        return sendAsync(topic, partition, null, key, value, null);
-    }
-
-    default Future<RecordMetadata> sendAsync(String topic, K key, V value) {
-        return sendAsync(topic, null, null, key, value, null);
-    }
-
-    default Future<RecordMetadata> sendAsync(String topic, V value) {
-        return sendAsync(topic, null, null, null, value, null);
+    default MessageBuilder.MessageBuilderBuilder<K, V> newContextBuilder(final String topic, final V value) {
+        return MessageBuilder.<K, V>builder()
+                .producer(this)
+                .topic(topic)
+                .value(value);
     }
 }

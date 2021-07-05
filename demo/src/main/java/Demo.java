@@ -7,6 +7,7 @@ import org.example.kafka.api.Consumer;
 import org.example.kafka.api.KeyValue;
 import org.example.kafka.api.Message;
 import org.example.kafka.api.Producer;
+import org.example.kafka.api.MessageBuilder;
 import org.example.kafka.api.RecordMetadata;
 import org.example.kafka.client.wrapper.ClientFactory;
 
@@ -33,6 +34,11 @@ public class Demo {
         final String bootstrapServers = "localhost:9092";
         final String topic = "my-topic";
 
+        MessageBuilder<String, String> context = MessageBuilder.<String, String>builder()
+                .value("hello")
+                .build();
+        System.out.println(context.getFuture().isDone());
+
         final Map<String, ClientFactory> clientFactoryMap = Arrays.stream(SUPPORTED_VERSIONS)
                 .collect(Collectors.toMap(
                         version -> version,
@@ -44,7 +50,8 @@ public class Demo {
         // 1. Produce messages
         clientFactoryMap.forEach((version, factory) -> {
             try (Producer<String, String> producer = factory.createProducer(bootstrapServers)) {
-                final RecordMetadata metadata = producer.sendAsync(topic, "message-" + version).get();
+                final RecordMetadata metadata =
+                        producer.newContextBuilder(topic, "message-" + version).build().sendAsync().get();
                 System.out.println("Kafka producer " + version + " send to " + metadata);
             } catch (Exception e) {
                 e.printStackTrace();
